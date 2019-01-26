@@ -54,9 +54,9 @@ static void InitEmptyGrid()
 
 static void InitRandomGrid()
 {
-    gPreyDeathRate = (double)rand() / (RAND_MAX);
-    gPredatorDeathRate = (double)rand() / (RAND_MAX);
-    gPredatorBirthRate = (double)rand() / (RAND_MAX);
+    gPreyDeathRate = 0.2;
+    gPredatorDeathRate = 0.1;
+    gPredatorBirthRate = 0.8;
 
     for (int i = 0; i < N_GRID; i++)
     {
@@ -290,7 +290,7 @@ int main()
     std::cout << "Predator-Prey CA" << std::endl;
     srand((unsigned)time(0));
 
-    InitGrid("blob.txt");
+    InitGrid("");
     FILE *movieFile = InitMovieFile("movie.mvi");
     FILE *statisticsFile = InitStatisticsFile("stats.txt");
 
