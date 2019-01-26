@@ -57,19 +57,81 @@ static FILE* InitStatisticsFile(std::string Filename)
     return fopen(Filename.c_str(), "w");
 }
 
+static int CountElements(Element E)
+{
+    int count = 0;
+
+    for (int i = 0; i < N_GRID; i++)
+    {
+        for (int j = 0; j < N_GRID; j++)
+        {
+            if (gGrid[i][j] == E)
+            {
+                count++;
+            }
+        }
+    }
+
+    return count;
+}
+
 static void WriteCmovie(FILE *MovieFile, int t)
 {
-    //
-    // TODO: implement this function
-    //
+    int nElements = CountElements(Predator) + CountElements(Prey);
+    int elementIndex = 0;
+
+    int intHolder = 0;
+    float floatHolder = 0.0;
+
+    // write number of particles
+    fwrite(&nElements, sizeof(int), 1, MovieFile);
+
+    // write current time step
+    fwrite(&t, sizeof(int), 1, MovieFile);
+
+    for (int i = 0; i < N_GRID; i++)
+    {
+        for (int j = 0; j < N_GRID; j++)
+        {
+            if (gGrid[i][j] == Empty)
+            {
+                continue;
+            }
+
+            // color
+            if (gGrid[i][j] == Predator)
+            {
+                intHolder = 2;
+            }
+            else
+            {
+                intHolder = 3;
+            }
+            fwrite(&intHolder, sizeof(int), 1, MovieFile);
+
+            // ID (element index)
+            fwrite(&elementIndex, sizeof(int), 1, MovieFile);
+            elementIndex += 1;
+
+            // position
+            floatHolder = (float)i;
+            fwrite(&floatHolder, sizeof(float), 1, MovieFile);
+            floatHolder = (float)j;
+            fwrite(&floatHolder, sizeof(float), 1, MovieFile);
+
+            // cum_dism, cmovie format
+            floatHolder = 1.0;
+            fwrite(&floatHolder, sizeof(float), 1, MovieFile);
+        }
+    }
 }
 
 static void WriteInStatisticsFile(FILE *StatisticsFile)
 {
-    //
-    // TODO: write a line with N_predators, N_preys
-    // this function is called at each iteration
-    //
+    int nPredators = CountElements(Predator);
+    int nPreys = CountElements(Prey);
+
+    fprintf(StatisticsFile, "%d %d\n", nPredators, nPreys);
 }
 
 int main()
