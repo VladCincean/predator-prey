@@ -112,7 +112,6 @@ static void InitGrid(std::string Filename = "")
 
 static void RunOneGeneration()
 {
-
     // Nothing has been visited yet
     memset(gGridVisits, false, sizeof(bool) * N_GRID * N_GRID);
 
@@ -168,8 +167,8 @@ static void RunOneGeneration()
 
             for (auto move : gMoves)
             {
-                auto neighbourRow = (row + move.first) % N_GRID;
-                auto neighbourColumn = (column + move.second) % N_GRID;
+                auto neighbourRow = (row + move.first + N_GRID) % N_GRID;
+                auto neighbourColumn = (column + move.second + N_GRID) % N_GRID;
 
                 if (gGrid[neighbourRow][neighbourColumn] != Empty ||
                     gGridVisits[neighbourRow][neighbourColumn])
