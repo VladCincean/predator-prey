@@ -17,6 +17,9 @@ typedef enum _Element
 #define N_GRID  50
 #define N_MOVES 8
 
+#define DENSITY_1 0.2
+#define DENSITY_2 0.2
+
 //////////////////// globals variables ////////////////////
 
 Element gGrid[N_GRID][N_GRID];
@@ -36,14 +39,10 @@ const std::pair<int, int> gMoves[] = {
     std::make_pair(-1, -1),    // NV
 };
 
-
 ///////////////////////////////////////////////////////////
 
-static void InitGrid()
+static void InitEmptyGrid()
 {
-    //
-    // TODO: init with initial configuration (hardcoded or read from file)
-    //
     for (int i = 0; i < N_GRID; i++)
     {
         for (int j = 0; j < N_GRID; j++)
@@ -51,22 +50,64 @@ static void InitGrid()
             gGrid[i][j] = Empty;
         }
     }
+}
 
-    gGrid[0][0] = Predator;
-    gGrid[0][1] = Predator;
-    gGrid[0][2] = Predator;
+static void InitRandomGrid()
+{
+    gPreyDeathRate = (double)rand() / (RAND_MAX);
+    gPredatorDeathRate = (double)rand() / (RAND_MAX);
+    gPredatorBirthRate = (double)rand() / (RAND_MAX);
 
-    gGrid[1][0] = Prey;
-    gGrid[1][1] = Prey;
-    gGrid[1][2] = Prey;
-    gGrid[1][3] = Prey;
-    gGrid[1][4] = Prey;
-    gGrid[1][5] = Prey;
+    for (int i = 0; i < N_GRID; i++)
+    {
+        for (int j = 0; j < N_GRID; j++)
+        {
+            if ((double)rand() / (RAND_MAX) < DENSITY_1)
+            {
+                gGrid[i][j] = Prey;
+            }
+            else if ((double)rand() / (RAND_MAX) < DENSITY_1 + DENSITY_2)
+            {
+                gGrid[i][j] = Predator;
+            }
+            else
+            {
+                gGrid[i][j] = Empty;
+            }
+        }
+    }
+}
 
+static void InitGrid(std::string Filename = "")
+{
+    InitEmptyGrid();
 
-    gPreyDeathRate = 0.2;
-    gPredatorDeathRate = 0.1;
-    gPredatorBirthRate = 0.8;
+    if (Filename.empty())
+    {
+        InitRandomGrid();
+    }
+    else
+    {
+        FILE *initFile = fopen(Filename.c_str(), "r");
+
+        fscanf(initFile, "%lf %lf %lf", &gPreyDeathRate, &gPredatorDeathRate, &gPredatorBirthRate);
+
+        int i = 0, j = 0, element = 0;
+        while (!feof(initFile))
+        {
+            fscanf(initFile, "%d %d %d", &i, &j, &element);
+            if (element == 1)
+            {
+                gGrid[i][j] = Prey;
+            }
+            else
+            {
+                gGrid[i][j] = Predator;
+            }
+        }
+
+        fclose(initFile);
+    }
 }
 
 static void RunOneGeneration()
@@ -250,7 +291,7 @@ int main()
     std::cout << "Predator-Prey CA" << std::endl;
     srand((unsigned)time(0));
 
-    InitGrid();
+    InitGrid("blob.txt");
     FILE *movieFile = InitMovieFile("movie.mvi");
     FILE *statisticsFile = InitStatisticsFile("stats.txt");
 
