@@ -77,8 +77,7 @@ static int CountElements(Element E)
 
 static void WriteCmovie(FILE *MovieFile, int t)
 {
-    int nElements = CountElements(Predator) + CountElements(Prey);
-    int elementIndex = 0;
+    int nElements = N_GRID + N_GRID;
 
     int intHolder = 0;
     float floatHolder = 0.0;
@@ -93,25 +92,24 @@ static void WriteCmovie(FILE *MovieFile, int t)
     {
         for (int j = 0; j < N_GRID; j++)
         {
-            if (gGrid[i][j] == Empty)
-            {
-                continue;
-            }
-
             // color
             if (gGrid[i][j] == Predator)
             {
                 intHolder = 2;
             }
-            else
+            else if (gGrid[i][j] == Prey)
             {
                 intHolder = 3;
+            }
+            else
+            {
+                intHolder = 1;
             }
             fwrite(&intHolder, sizeof(int), 1, MovieFile);
 
             // ID (element index)
-            fwrite(&elementIndex, sizeof(int), 1, MovieFile);
-            elementIndex += 1;
+            intHolder = i * N_GRID + j;
+            fwrite(&intHolder, sizeof(int), 1, MovieFile);
 
             // position
             floatHolder = (float)i;
