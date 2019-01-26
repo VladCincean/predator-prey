@@ -77,7 +77,7 @@ static int CountElements(Element E)
 
 static void WriteCmovie(FILE *MovieFile, int t)
 {
-    int nElements = N_GRID + N_GRID;
+    int nElements = N_GRID * N_GRID;
 
     int intHolder = 0;
     float floatHolder = 0.0;
